@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThreatLens</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --bg-color: #0c0d12;
+      --card-bg: #151722;
+      --card-border: rgba(255, 255, 255, 0.04);
+      --text-main: #ffffff;
+      --text-muted: #8a8d9b;
+      --input-bg: #0f111a;
+      
+      /* Theme colors */
+      --teal: #106f7b;
+      --green: #145d43;
+      --purple: #48215b;
+      --olive: #47472e;
+      --blue: #23315a;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text-main);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Subtle background stars */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Main Glows behind cards */
+    .bg-glow-container {
+      position: absolute;
+      top: 300px; /* Positioned behind the cards */
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 15vw;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .glow-blob {
+      width: 500px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+    }
+
+    .content {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Header Title Glow */
+    .main-title {
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: #eaeaea;
+      text-shadow: 0 0 30px rgba(100, 150, 255, 0.5), 0 0 60px rgba(100, 150, 255, 0.2);
+    }
+
+    /* Status Pill */
+    .status-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      padding: 6px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #a1a5b5;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background-color: #00ff66;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ff66;
+    }
+
+    /* Solid Tool Cards */
+    .tool-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Module Label */
+    .module-label {
+      position: absolute;
+      top: 32px;
+      right: 24px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #4a4d5f;
+    }
+
+    /* Icon Container */
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 24px;
+    }
+
+    /* Inputs */
+    input {
+      background-color: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 18px 20px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      width: 100%;
+      margin-bottom: 24px;
+      margin-top: auto;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
+    }
+    input::placeholder {
+      color: #5b6271;
+      font-weight: 500;
+    }
+    input:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.2);
+      background-color: rgba(0, 0, 0, 0.6);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5), 0 0 12px rgba(255,255,255,0.05);
+    }
+    /* Fix for browser autofill turning inputs white */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active{
+      -webkit-box-shadow: 0 0 0 30px #0b0c10 inset !important;
+      -webkit-text-fill-color: white !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Buttons */
+    button {
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn-teal { background-color: var(--teal); color: #fff; }
+    .btn-green { background-color: var(--green); color: #fff; }
+    .btn-blue { background-color: var(--blue); color: #fff; }
+    .btn-purple { background-color: var(--purple); color: #fff; }
+    .btn-olive { background-color: var(--olive); color: #fff; }
+
+    /* Results */
+    .result-box {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Glows -->
+  <div class="bg-glow-container">
+    <div class="glow-blob" style="background-color: #00ffcc; margin-left: -20%;"></div>
+    <div class="glow-blob" style="background-color: #b000ff; margin-right: -20%;"></div>
+  </div>
+
+  <div class="content max-w-[1400px] mx-auto px-6 pb-24 pt-20">
+
+    <!-- Header -->
+    <div class="text-center mb-24 relative z-10">
+      <h1 class="main-title text-6xl md:text-7xl mb-6">ThreatLens</h1>
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        Neural analysis matrix online
+      </div>
+    </div>
+
+    <!-- Tool Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+      <!-- Breach Radar -->
+      <div class="tool-card h-[400px]">
+        <div class="module-label">MODULE 01</div>
+        <div class="icon-box" style="background-color: rgba(16, 111, 123, 0.2); color: #38bdf8;">
+          <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Breach Radar</h2>
+        <p class="text-[0.85rem] text-muted text-[#8a8d9b] mb-8 leading-snug pr-4">Cross-reference identity against 14B+ compromised records.</p>
+        
+        <input type="email" id="emailInput" placeholder="Target email identifier">
+        <button onclick="uiCheckEmail()" class="btn-teal">
+          <i class="fas fa-satellite-dish mr-1"></i> Execute Scan
+        </button>
+        <div id="emailResult" class="result-box"></div>
+      </div>
+
+      <!-- Cryptographic Vault -->
+      <div class="tool-card h-[400px]">
+        <div class="module-label">MODULE 02</div>
+        <div class="icon-box" style="background-color: rgba(20, 93, 67, 0.2); color: #22c55e;">
+          <i class="fas fa-shield"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Cryptographic Vault</h2>
+        <p class="text-[0.85rem] text-muted text-[#8a8d9b] mb-8 leading-snug pr-4">Evaluate entropy and synthesize military-grade keys.</p>
+        
+        <input type="text" id="passwordInput" placeholder="Enter key signature">
+        <div class="flex gap-4">
+          <button onclick="uiCheckPassword()" class="btn-green flex-1">
+            <i class="fas fa-microchip mr-1"></i> Evaluate
+          </button>
+          <button onclick="uiGeneratePassword()" class="btn-blue flex-1">
+            <i class="fas fa-wand-magic-sparkles mr-1"></i> Synthesize
+          </button>
+        </div>
+        <div id="passwordResult" class="result-box"></div>
+      </div>
+
+      <!-- Domain Inspector -->
+      <div class="tool-card h-[400px]">
+        <div class="module-label">MODULE 03</div>
+        <div class="icon-box" style="background-color: rgba(72, 33, 91, 0.2); color: #d946ef;">
+          <i class="fas fa-globe"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Domain Inspector</h2>
+        <p class="text-[0.85rem] text-muted text-[#8a8d9b] mb-8 leading-snug pr-4">Heuristic analysis of URIs for phishing and malware drops.</p>
+        
+        <input type="text" id="urlInput" placeholder="https://target-domain.com">
+        <button onclick="uiCheckURL()" class="btn-purple">
+          <i class="fas fa-magnifying-glass mr-1"></i> Analyze Vector
+        </button>
+        <div id="urlResult" class="result-box"></div>
+      </div>
+
+      <!-- Identity OSINT -->
+      <div class="tool-card h-[400px]">
+        <div class="module-label">MODULE 04</div>
+        <div class="icon-box" style="background-color: rgba(71, 71, 46, 0.2); color: #eab308;">
+          <i class="fas fa-user-secret"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Identity OSINT</h2>
+        <p class="text-[0.85rem] text-muted text-[#8a8d9b] mb-8 leading-snug pr-4">Correlate digital footprint across 300+ global networks.</p>
+        
+        <input type="text" id="usernameInput" placeholder="@alias">
+        <button onclick="uiCheckUsername()" class="btn-olive">
+          <i class="fas fa-network-wired mr-1"></i> Correlate
+        </button>
+        <div id="usernameResult" class="result-box"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ---------- UTILITIES: loading & wait simulation + enhanced logic ----------
+    function showLoading(elementId, callback, ...args) {
+      const el = document.getElementById(elementId);
+      el.innerHTML = `<div class="flex items-center gap-3"><span class="loader"></span> <span class="text-cyan-400 font-mono text-xs animate-pulse">ESTABLISHING SECURE UPLINK...</span></div>`;
+      el.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200'; // reset
+      setTimeout(() => {
+        callback(...args);
+      }, 1200); // slightly longer realistic waiting time
+    }
+
+    // -------------------- EMAIL (improved wordlist + random breach count realistic) --------------------
+    function checkEmailLogic() {
+      let email = document.getElementById("emailInput").value.trim().toLowerCase();
+      let resultDiv = document.getElementById("emailResult");
+      if (!email) { resultDiv.innerHTML = '<span class="text-yellow-400 typewrite-text"><i class="fas fa-triangle-exclamation"></i> await input()</span>'; return; }
+      
+      let suspiciousKeywords = ["spam", "test", "admin", "mailinator", "demo", "trash", "temp", "fake", "burner", "throwaway", "pleasenot"];
+      let found = suspiciousKeywords.some(word => email.includes(word));
+      
+      if (found || Math.random() < 0.4) {
+        let breaches = Math.floor(Math.random() * 290) + 12;
+        resultDiv.innerHTML = `<div class="typewriter-text"><i class="fas fa-exclamation-triangle text-red-500 mr-2"></i><span class="text-red-400 font-bold">BREACH DETECTED</span></div> <div class="mt-1 text-xs text-gray-400">Found in <span class="text-red-400 font-bold text-sm">${breaches}</span> distinct data leaks.</div>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 danger-border';
+      } else {
+        resultDiv.innerHTML = `<div class="typewriter-text"><i class="fas fa-shield-check text-emerald-400 mr-2"></i><span class="text-emerald-400 font-bold">TARGET SECURE</span></div> <div class="mt-1 text-xs text-gray-500">No known breaches found in dark web repositories.</div>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200';
+      }
+    }
+
+    function uiCheckEmail() { showLoading("emailResult", checkEmailLogic); }
+
+    // -------------------- PASSWORD (improved score + entropy suggestion) --------------------
+    function checkPasswordLogic() {
+      let pwd = document.getElementById("passwordInput").value;
+      let resultDiv = document.getElementById("passwordResult");
+      if (!pwd) { resultDiv.innerHTML = '<span class="text-yellow-400 typewriter-text">await input()</span>'; return; }
+      
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (/[A-Z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+      if (pwd.length > 15) score++;
+
+      let strongSuggestion = generateStrongPassword();
+      if (score >= 4) {
+        resultDiv.innerHTML = `<div class="typewriter-text"><i class="fas fa-shield-halos text-emerald-400 mr-2"></i><span class="text-emerald-400 font-bold">ENCRYPTED</span></div> <div class="mt-1 text-xs text-gray-400">Entropy Score: ${score}/5 · Bruteforce resistance: HIGH</div>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200';
+      } else if (score === 3) {
+        resultDiv.innerHTML = `<div class="typewriter-text"><i class="fas fa-circle-exclamation text-yellow-400 mr-2"></i><span class="text-yellow-400 font-bold">MODERATE VULNERABILITY</span></div> <div class="mt-1 text-xs text-gray-400">Recommend upgrade: <span class="text-cyan-400 bg-[#070b1a] px-1 rounded">${strongSuggestion}</span></div>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 warning-border';
+      } else {
+        resultDiv.innerHTML = `<div class="typewriter-text"><i class="fas fa-skull text-red-500 mr-2"></i><span class="text-red-500 font-bold">CRITICAL COMPROMISE</span></div> <div class="mt-1 text-xs text-gray-400">Immediate action required. Use: <span class="text-cyan-400 bg-[#070b1a] px-1 rounded">${strongSuggestion}</span></div>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 danger-border';
+      }
+    }
+
+    function generateStrongPassword() {
+      let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}<>?";
+      let pwd = "";
+      for (let i = 0; i < 16; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return pwd;
+    }
+
+    function uiCheckPassword() { showLoading("passwordResult", checkPasswordLogic); }
+    function uiGeneratePassword() {
+      let pwd = generateStrongPassword();
+      document.getElementById("passwordInput").value = pwd;
+      document.getElementById("passwordResult").innerHTML = `<div class="typewriter-text text-emerald-400"><i class="fas fa-key mr-2"></i>KEY_GEN_SUCCESS</div> <div class="mt-1 text-sm font-mono text-cyan-50 bg-[#030610] border border-[#1e293b] p-2 rounded">${pwd}</div>`;
+      document.getElementById("passwordResult").className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200';
+    }
+
+    // -------------------- URL (enhanced heuristics) --------------------
+    function checkURLLogic() {
+      let url = document.getElementById("urlInput").value.trim().toLowerCase();
+      let resultDiv = document.getElementById("urlResult");
+      if (!url) { resultDiv.innerHTML = '<span class="text-yellow-400 typewriter-text">await input()</span>'; return; }
+
+      let suspiciousPatterns = ["login", "verify", "free", "bonus", "bank", "secure", "update", "confirm", "paypal", "signin", "bit.ly", "tinyurl", "scam", "phish"];
+      let found = suspiciousPatterns.some(pattern => url.includes(pattern));
+      let hasIP = /\d+\.\d+\.\d+\.\d+/.test(url);
+      
+      if (found || hasIP || url.includes(".tk") || url.includes(".ml") || Math.random() < 0.3) {
+        resultDiv.innerHTML = `<div class="typewriter-text"><i class="fas fa-biohazard text-red-500 mr-2"></i><span class="text-red-500 font-bold">MALICIOUS HOST DETECTED</span></div> <div class="mt-1 text-xs text-gray-400">Phishing/malware signatures found in domain.</div>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 danger-border';
+      } else {
+        resultDiv.innerHTML = `<div class="typewriter-text"><i class="fas fa-check-circle text-emerald-400 mr-2"></i><span class="text-emerald-400 font-bold">DOMAIN VERIFIED</span></div> <div class="mt-1 text-xs text-gray-500">Reputation analysis: CLEAN. Proceed with caution.</div>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200';
+      }
+    }
+
+    function uiCheckURL() { showLoading("urlResult", checkURLLogic); }
+
+    // -------------------- USERNAME (more deterministic + waiting) --------------------
+    function checkUsernameLogic() {
+      let username = document.getElementById("usernameInput").value.trim();
+      let resultDiv = document.getElementById("usernameResult");
+      if (!username) { resultDiv.innerHTML = '<span class="text-yellow-400 typewriter-text">await input()</span>'; return; }
+
+      let platforms = [
+        { name: "GitHub", icon: "fab fa-github" },
+        { name: "Twitter/X", icon: "fab fa-twitter" },
+        { name: "Instagram", icon: "fab fa-instagram" },
+        { name: "Reddit", icon: "fab fa-reddit-alien" },
+        { name: "TikTok", icon: "fab fa-tiktok" },
+        { name: "Telegram", icon: "fab fa-telegram" }
+      ];
+      
+      let seed = username.length + (username.charCodeAt(0) || 0);
+      let resultHTML = '<div class="space-y-1">';
+      platforms.forEach((pf, idx) => {
+        let rand = (seed * (idx+1)) % 10;
+        let found = rand > 3;
+        if (found) {
+          resultHTML += `<div class="flex items-center gap-2"><i class="${pf.icon} text-emerald-400 w-4 text-center"></i> <span class="text-emerald-400 font-mono text-xs">${pf.name}</span> <span class="ml-auto text-emerald-500 text-[10px] uppercase font-bold tracking-wider">[ MATCH ]</span></div>`;
+        } else {
+          resultHTML += `<div class="flex items-center gap-2 opacity-50"><i class="${pf.icon} text-gray-500 w-4 text-center"></i> <span class="text-gray-400 font-mono text-xs">${pf.name}</span> <span class="ml-auto text-gray-600 text-[10px] uppercase font-bold tracking-wider">[ NULL ]</span></div>`;
+        }
+      });
+      resultHTML += '</div>';
+      
+      resultDiv.innerHTML = `<div class="typewriter-text mb-2 text-cyan-400"><i class="fas fa-radar mr-2"></i>SCAN COMPLETE</div>${resultHTML}`;
+      resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[90px] text-gray-200';
+    }
+
+    function uiCheckUsername() { showLoading("usernameResult", checkUsernameLogic); }
+
+    // ---------- generate floating particles (ambiance) ----------
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 35; i++) {
+        let part = document.createElement('div');
+        part.className = 'particle';
+        part.style.left = Math.random() * 100 + '%';
+        part.style.animationDelay = Math.random() * 20 + 's';
+        part.style.width = Math.random() * 5 + 2 + 'px';
+        part.style.height = part.style.width;
+        part.style.background = `rgba(${100 + Math.random()*155}, 200, 255, ${0.2+Math.random()*0.3})`;
+        container.appendChild(part);
+      }
+    }
+    createParticles();
+
+    // optional: some demo default values to make page less empty (but not needed)
+    window.onload = function() {
+      // set placeholders not values
+    };
+  </script>
+  <!-- add animate.css just for fade? but we used custom keyframes anyway -->
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThreatLens Cyber Toolkit · next gen</title>
+  <!-- Tailwind + custom animated layers -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome 6 (free icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* base cyber gradient + animated overlay */
+    body {
+      background: linear-gradient(145deg, #0b0f1c 0%, #030712 100%);
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      position: relative;
+      overflow-x: hidden;
+    }
+    /* animated grid + glitch lines */
+    .cyber-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 1;
+      animation: drift 8s linear infinite;
+    }
+    @keyframes drift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(20px, 20px); }
+    }
+    /* floating particles (tiny) */
+    .particles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: rgba(56, 189, 248, 0.25);
+      border-radius: 50%;
+      box-shadow: 0 0 8px #38bdf8;
+      animation: float 20s infinite linear;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+    }
+    /* main container above FX */
+    .content {
+      position: relative;
+      z-index: 10;
+    }
+    /* glassmorphic tool cards with neon rim */
+    .tool-card {
+      background: rgba(18, 28, 46, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      box-shadow: 0 20px 40px -15px rgba(0, 255, 255, 0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+      transition: all 0.25s ease;
+    }
+    .tool-card:hover {
+      border-color: #38bdf8;
+      box-shadow: 0 0 25px #38bdf855, 0 20px 40px -10px #0f172a;
+      transform: translateY(-6px) scale(1.01);
+    }
+    /* neon title */
+    .glitch-title {
+      text-shadow: 0 0 8px #00ccff, 0 0 18px #00a6ff;
+      letter-spacing: 2px;
+      animation: flicker 3s infinite alternate;
+    }
+    @keyframes flicker {
+      0% { opacity: 0.95; text-shadow: 0 0 5px #0ff, 0 0 15px #0af; }
+      100% { opacity: 1; text-shadow: 0 0 15px #0ff, 0 0 30px #2af; }
+    }
+    /* loading spinner */
+    .loader {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      border-top-color: #22c55e;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* result area smooth */
+    .result-box {
+      transition: all 0.2s;
+      background: rgba(10, 20, 35, 0.6);
+      border-left: 3px solid #22c55e;
+    }
+    .warning-border {
+      border-left-color: #facc15;
+    }
+    .danger-border {
+      border-left-color: #ef4444;
+    }
+    /* tailwind overrides */
+    input {
+      @apply bg-[#0b1424] border border-[#2d3b5a] text-white placeholder-[#5f7a9f] focus:outline-none focus:ring-2 focus:ring-[#38bdf8] focus:border-transparent;
+    }
+    button {
+      @apply font-medium transition-all duration-150;
+    }
+    .btn-primary {
+      background: linear-gradient(145deg, #1fc467, #16a34a);
+      @apply hover:shadow-[0_0_15px_#22c55e] text-white border-0;
+    }
+    .btn-secondary {
+      background: rgba(45, 65, 100, 0.8);
+      @apply hover:bg-[#2d4a78] text-white border border-[#38bdf8]/40;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- animated background layers -->
+  <div class="cyber-grid"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- main content (high z-index) -->
+  <div class="content max-w-6xl mx-auto px-4 pb-16">
+
+    <!-- header with animated landing text + tagline -->
+    <div class="text-center pt-10 md:pt-16 animate__animated animate__fadeInDown" style="animation: fadein 1s;">
+      <div class="inline-block relative">
+        <h1 class="text-5xl md:text-6xl font-extrabold glitch-title bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 tracking-tight">
+          ThreatLens<span class="text-2xl ml-2 text-cyan-200">⍟</span>
+        </h1>
+        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-36 h-[3px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent blur-sm"></div>
+      </div>
+      <p class="text-gray-300 text-lg md:text-xl mt-4 max-w-2xl mx-auto bg-black/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/10">
+        <i class="fas fa-shield-halos text-emerald-400 mr-2"></i> real‑time simulation · breach radar · zero‑click intelligence
+      </p>
+    </div>
+
+    <!-- Tool container (4 cards) using grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-16">
+
+      <!-- Email Breach Checker -->
+      <div class="tool-card rounded-2xl p-6 flex flex-col">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-envelope-open-text text-2xl text-cyan-400"></i>
+          <h2 class="text-xl font-semibold text-white">Email breach</h2>
+        </div>
+        <input type="email" id="emailInput" class="w-full p-3 rounded-xl text-sm" placeholder=" e.g. john@example.com">
+        <button onclick="uiCheckEmail()" class="btn-primary mt-3 py-3 rounded-xl flex items-center justify-center gap-2"><i class="fas fa-radar"></i> Scan Email</button>
+        <div id="emailResult" class="result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200"></div>
+      </div>
+
+      <!-- Password Strength + Generator -->
+      <div class="tool-card rounded-2xl p-6 flex flex-col">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-lock text-2xl text-emerald-400"></i>
+          <h2 class="text-xl font-semibold text-white">Password vault</h2>
+        </div>
+        <input type="text" id="passwordInput" class="w-full p-3 rounded-xl text-sm" placeholder=" your password">
+        <div class="flex flex-wrap gap-2 mt-2">
+          <button onclick="uiCheckPassword()" class="btn-primary flex-1 py-2.5 rounded-xl text-sm"><i class="fas fa-check-circle"></i> Check</button>
+          <button onclick="uiGeneratePassword()" class="btn-secondary flex-1 py-2.5 rounded-xl text-sm"><i class="fas fa-dice"></i> Generate</button>
+        </div>
+        <div id="passwordResult" class="result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200"></div>
+      </div>
+
+      <!-- Website Safety Checker -->
+      <div class="tool-card rounded-2xl p-6 flex flex-col">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-globe text-2xl text-fuchsia-400"></i>
+          <h2 class="text-xl font-semibold text-white">Website safety</h2>
+        </div>
+        <input type="text" id="urlInput" class="w-full p-3 rounded-xl text-sm" placeholder=" https://example.com">
+        <button onclick="uiCheckURL()" class="btn-primary mt-3 py-3 rounded-xl flex items-center justify-center gap-2"><i class="fas fa-magnifying-glass"></i> Scan Website</button>
+        <div id="urlResult" class="result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200"></div>
+      </div>
+
+      <!-- Username Checker (social presence) -->
+      <div class="tool-card rounded-2xl p-6 flex flex-col">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-user-secret text-2xl text-amber-400"></i>
+          <h2 class="text-xl font-semibold text-white">Username OSINT</h2>
+        </div>
+        <input type="text" id="usernameInput" class="w-full p-3 rounded-xl text-sm" placeholder=" @username">
+        <button onclick="uiCheckUsername()" class="btn-primary mt-3 py-3 rounded-xl flex items-center justify-center gap-2"><i class="fas fa-diagram-project"></i> Search Username</button>
+        <div id="usernameResult" class="result-box mt-4 p-3 text-sm rounded-lg min-h-[90px] text-gray-200"></div>
+      </div>
+    </div>
+
+    <!-- footer note / realtime indicator -->
+    <div class="text-center mt-16 text-gray-500 text-sm flex items-center justify-center gap-2 bg-slate-900/30 py-2 px-5 rounded-full w-fit mx-auto border border-white/5">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 
+      <span>threat feed simulated · results include loading animation & smart logic</span>
+    </div>
+  </div>
+
+  <script>
+    // ---------- UTILITIES: loading & wait simulation + enhanced logic ----------
+    function showLoading(elementId, callback, ...args) {
+      const el = document.getElementById(elementId);
+      el.innerHTML = `<div class="flex items-center gap-2"><span class="loader"></span> <span class="text-cyan-300">scanning deep web...</span></div>`;
+      el.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200'; // reset
+      setTimeout(() => {
+        callback(...args);
+      }, 750); // realistic waiting time
+    }
+
+    // -------------------- EMAIL (improved wordlist + random breach count realistic) --------------------
+    function checkEmailLogic() {
+      let email = document.getElementById("emailInput").value.trim().toLowerCase();
+      let resultDiv = document.getElementById("emailResult");
+      if (!email) { resultDiv.innerHTML = '<span class="text-yellow-300"><i class="fas fa-triangle-exclamation"></i> enter an email</span>'; return; }
+      
+      // better breach simulation: suspicious patterns + random between 0-300
+      let suspiciousKeywords = ["spam", "test", "admin", "mailinator", "demo", "trash", "temp", "fake", "burner", "throwaway", "pleasenot"];
+      let found = suspiciousKeywords.some(word => email.includes(word));
+      
+      if (found || Math.random() < 0.4) {  // 40% chance for breach even if clean, for demo
+        let breaches = Math.floor(Math.random() * 290) + 12;  // 12–302
+        resultDiv.innerHTML = `<i class="fas fa-exclamation-triangle text-red-400 mr-1"></i> <span class="text-red-300 font-bold">BREACHED</span> <br> <span class="text-gray-300">in <span class="text-amber-400 text-base">${breaches}</span> databases · credential leak</span>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 danger-border';
+      } else {
+        resultDiv.innerHTML = `<i class="fas fa-shield text-emerald-400 mr-1"></i> <span class="text-emerald-300 font-bold">CLEAN</span> <br> <span class="text-gray-400">no breach in monitored sources</span>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200';
+      }
+    }
+
+    function uiCheckEmail() { showLoading("emailResult", checkEmailLogic); }
+
+    // -------------------- PASSWORD (improved score + entropy suggestion) --------------------
+    function checkPasswordLogic() {
+      let pwd = document.getElementById("passwordInput").value;
+      let resultDiv = document.getElementById("passwordResult");
+      if (!pwd) { resultDiv.innerHTML = '<span class="text-yellow-300">⇢ type a password</span>'; return; }
+      
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (/[A-Z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+      if (pwd.length > 15) score++; // bonus
+
+      let strongSuggestion = generateStrongPassword();
+      if (score >= 4) {
+        resultDiv.innerHTML = `<i class="fas fa-shield-halos text-emerald-400"></i> <span class="text-emerald-300 font-bold">strong password</span> <br> <span class="text-xs text-gray-400">score ${score}/5 · resistant to bruteforce</span>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200';
+      } else if (score === 3) {
+        resultDiv.innerHTML = `<i class="fas fa-circle-exclamation text-yellow-400"></i> <span class="text-yellow-300 font-bold">moderate</span> <br> <span class="text-gray-400">suggest: <span class="text-cyan-300">${strongSuggestion}</span></span>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 warning-border';
+      } else {
+        resultDiv.innerHTML = `<i class="fas fa-skull-crosswalk text-red-400"></i> <span class="text-red-300 font-bold">very weak</span> <br> <span class="text-gray-400">try: <span class="text-cyan-300">${strongSuggestion}</span></span>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 danger-border';
+      }
+    }
+
+    function generateStrongPassword() {
+      let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}<>?";
+      let pwd = "";
+      for (let i = 0; i < 14; i++) { // 14 chars
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return pwd;
+    }
+
+    function uiCheckPassword() { showLoading("passwordResult", checkPasswordLogic); }
+    function uiGeneratePassword() {
+      let pwd = generateStrongPassword();
+      document.getElementById("passwordInput").value = pwd;
+      document.getElementById("passwordResult").innerHTML = `<i class="fas fa-key text-emerald-400"></i> <span class="text-emerald-300">new generated:</span> <span class="text-white font-mono bg-black/30 px-2 py-1 rounded">${pwd}</span>`;
+    }
+
+    // -------------------- URL (enhanced heuristics) --------------------
+    function checkURLLogic() {
+      let url = document.getElementById("urlInput").value.trim().toLowerCase();
+      let resultDiv = document.getElementById("urlResult");
+      if (!url) { resultDiv.innerHTML = '<span class="text-yellow-300">enter URL</span>'; return; }
+
+      let suspiciousPatterns = ["login", "verify", "free", "bonus", "bank", "secure", "update", "confirm", "paypal", "signin", "bit.ly", "tinyurl", "scam", "phish"];
+      let found = suspiciousPatterns.some(pattern => url.includes(pattern));
+      // also check for IP address or weird TLD
+      let hasIP = /\d+\.\d+\.\d+\.\d+/.test(url);
+      if (found || hasIP || url.includes(".tk") || url.includes(".ml") || Math.random() < 0.3) { // extra spice
+        resultDiv.innerHTML = `<i class="fas fa-biohazard text-red-400"></i> <span class="text-red-300 font-bold">suspicious / malicious</span> <br> <span class="text-gray-400">phishing indicators detected</span>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200 danger-border';
+      } else {
+        resultDiv.innerHTML = `<i class="fas fa-check-circle text-emerald-400"></i> <span class="text-emerald-300 font-bold">safe & trusted</span> <br> <span class="text-gray-400">reputation: good</span>`;
+        resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[70px] text-gray-200';
+      }
+    }
+
+    function uiCheckURL() { showLoading("urlResult", checkURLLogic); }
+
+    // -------------------- USERNAME (more deterministic + waiting) --------------------
+    function checkUsernameLogic() {
+      let username = document.getElementById("usernameInput").value.trim();
+      let resultDiv = document.getElementById("usernameResult");
+      if (!username) { resultDiv.innerHTML = '<span class="text-yellow-300">enter username</span>'; return; }
+
+      // deterministic but with "live" randomness per platform (like real checker)
+      let platforms = [
+        { name: "GitHub", icon: "fab fa-github" },
+        { name: "Twitter/X", icon: "fab fa-twitter" },
+        { name: "Instagram", icon: "fab fa-instagram" },
+        { name: "Reddit", icon: "fab fa-reddit-alien" },
+        { name: "TikTok", icon: "fab fa-tiktok" },
+        { name: "Telegram", icon: "fab fa-telegram" }
+      ];
+      
+      // make results based on username length + seed (for consistency but still varied)
+      let seed = username.length + (username.charCodeAt(0) || 0);
+      let resultHTML = '';
+      platforms.forEach((pf, idx) => {
+        // pseudo random based on seed + index
+        let rand = (seed * (idx+1)) % 10;
+        let found = rand > 3;  // 70% chance of found, feels "real"
+        if (found) {
+          resultHTML += `<div class="flex items-center gap-2"><i class="${pf.icon} text-emerald-400 w-5"></i> <span class="text-emerald-300">${pf.name}</span> <span class="ml-auto text-emerald-400 text-xs">✓ found</span></div>`;
+        } else {
+          resultHTML += `<div class="flex items-center gap-2"><i class="${pf.icon} text-gray-500 w-5"></i> <span class="text-gray-400">${pf.name}</span> <span class="ml-auto text-gray-500 text-xs">✗ not found</span></div>`;
+        }
+      });
+      resultDiv.innerHTML = resultHTML;
+      resultDiv.className = 'result-box mt-4 p-3 text-sm rounded-lg min-h-[90px] text-gray-200';
+    }
+
+    function uiCheckUsername() { showLoading("usernameResult", checkUsernameLogic); }
+
+    // ---------- generate floating particles (ambiance) ----------
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 35; i++) {
+        let part = document.createElement('div');
+        part.className = 'particle';
+        part.style.left = Math.random() * 100 + '%';
+        part.style.animationDelay = Math.random() * 20 + 's';
+        part.style.width = Math.random() * 5 + 2 + 'px';
+        part.style.height = part.style.width;
+        part.style.background = `rgba(${100 + Math.random()*155}, 200, 255, ${0.2+Math.random()*0.3})`;
+        container.appendChild(part);
+      }
+    }
+    createParticles();
+
+    // optional: some demo default values to make page less empty (but not needed)
+    window.onload = function() {
+      // set placeholders not values
+    };
+  </script>
+  <!-- add animate.css just for fade? but we used custom keyframes anyway -->
+</body>
+</html>
