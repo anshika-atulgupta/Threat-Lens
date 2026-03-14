@@ -1,185 +1,87 @@
-# ThreatLens – Digital Identity & Threat Exposure Analyzer
+# ThreatLens
 
-ThreatLens is a cybersecurity web application that helps users analyze how exposed their digital identity is on the internet. It allows users to scan their email for known data breaches and check whether a URL is malicious using real threat intelligence APIs.
+<p align="center">
+  <strong>Neural analysis matrix online · Real-time simulation · Breach radar · Zero-click intelligence</strong>
+</p>
 
-The goal of this project is to provide a simple security dashboard that gives users quick insights into their digital risk and suggests actions to improve their online safety.
-
----
-
-## Features
-
-Email Breach Scanner
-Checks whether an email address has appeared in known data breaches using the RapidAPI Breach Directory service.
-
-Malicious URL Scanner
-Analyzes suspicious links using the VirusTotal threat intelligence platform to determine whether a URL is flagged by security engines.
-
-Security Dashboard
-Displays results in a cybersecurity-themed dashboard showing scan results and risk indicators.
-
-User Friendly Interface
-Modern dark themed UI with Tailwind CSS and animations.
-
-Risk Awareness
-Provides security recommendations based on scan results.
+ThreatLens is a conceptual, next-generation cybersecurity dashboard designed with a premium, immersive dark-mode aesthetic. It simulates advanced threat intelligence tools, demonstrating how modern security products can combine beautiful UI/UX with critical data insights.
 
 ---
 
-## Tech Stack
+## 🌟 Modules
 
-Frontend
+The dashboard features four simulated security modules:
 
-* React (Vite)
-* Tailwind CSS
-* Axios
-* Framer Motion
-* React Router
+1. **Breach Radar** *(Module 01)*
+   - Cross-reference identity against 14B+ compromised records.
+   - Detects if an email identifier has appeared in known data leaks.
+   
+2. **Cryptographic Vault** *(Module 02)*
+   - Evaluate entropy and synthesize military-grade keys.
+   - Audits password strength and generates secure, randomized 16-character keys.
 
-Backend
+3. **Domain Inspector** *(Module 03)*
+   - Heuristic analysis of URIs for phishing and malware drops.
+   - Scans URLs for malicious patterns and suspicious host signatures.
 
-* Node.js
-* Express.js
-* Axios
-* dotenv
-* cors
-
-APIs Used
-
-* RapidAPI Breach Directory
-* VirusTotal
+4. **Identity OSINT** *(Module 04)*
+   - Correlate digital footprint across 300+ global networks.
+   - Simulates username footprinting across major social and developer platforms.
 
 ---
 
-## Project Structure
+## 🎨 UI/UX Design
 
-ThreatLens
-
-frontend
-src
-components
-pages
-Home.jsx
-Scan.jsx
-Dashboard.jsx
-services
-App.jsx
-main.jsx
-
-backend
-routes
-emailRoute.js
-urlRoute.js
-services
-emailService.js
-urlService.js
-server.js
-.env
+The interface was completely overhauled to match a premium "hacker/cyber" aesthetic without relying on generic tropes:
+- **Solid Dark Theme**: Deep space background with subtle star-dots and glowing localized background flares.
+- **Modern Typography**: Utilizes `Inter` for clean legibility and `Fira Code` (monospace) for terminal-like data inputs and outputs.
+- **Interactive Feedback**: Features custom CSS animations including a rotating radar loader and a "typewriter" effect for revealing scan results mimicking a real terminal output.
+- **Sleek Inputs & Buttons**: Custom-styled form elements with recessed shadows and solid, color-coded pill buttons for distinct module actions.
 
 ---
 
-## How It Works
+## 🚀 Tech Stack
 
-1. The user enters an email or URL on the scan page.
-2. The React frontend sends the request to the Node.js backend.
-3. The backend communicates with external threat intelligence APIs.
-4. The results are processed and returned to the frontend.
-5. The dashboard displays the risk analysis and recommendations.
-
-System Flow
-
-User → React Frontend → Express Backend → Security APIs → Results Dashboard
+Currently, the application is built as a highly-optimized, fast frontend prototype:
+- **HTML5 & Vanilla JavaScript**: Pure client-side simulation logic.
+- **Tailwind CSS**: Utility-first styling for rapid layout and spacing.
+- **Custom CSS**: Bespoke animations, glows, and shadow definitions.
+- **Vite**: Next-generation frontend tooling for instantaneous local development.
+- **Font Awesome 6**: Crisp, scalable iconography.
 
 ---
 
-## Installation
+## 💻 Getting Started
 
-Clone the repository
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 
-git clone https://github.com/yourusername/threatlens.git
+### Installation
 
-Navigate into the project folder
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/anshika-atulgupta/Threat-Lens.git
+   ```
 
-cd threatlens
+2. Navigate into the project folder:
+   ```bash
+   cd Threat-Lens
+   ```
 
----
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Backend Setup
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-Navigate to the backend folder
-
-cd backend
-
-Install dependencies
-
-npm install
-
-Create a .env file and add your API keys
-
-RAPIDAPI_KEY=your_rapidapi_key
-VIRUSTOTAL_API_KEY=your_virustotal_key
-PORT=5000
-
-Start the backend server
-
-node server.js
+5. Open the application in your browser at `http://localhost:5173/`.
 
 ---
 
-## Frontend Setup
+## 🔒 Disclaimer
 
-Navigate to the frontend folder
-
-cd frontend
-
-Install dependencies
-
-npm install
-
-Start the development server
-
-npm run dev
-
----
-
-## Usage
-
-1. Open the application in your browser.
-2. Navigate to the scan page.
-3. Enter an email to check if it has been involved in a data breach.
-4. Enter a URL to analyze whether it is malicious.
-5. View the results in the dashboard along with security recommendations.
-
----
-
-## Security Recommendations
-
-If your email appears in a breach:
-
-* Change your password immediately.
-* Enable two-factor authentication.
-* Avoid reusing passwords across different sites.
-
-If a URL is flagged as malicious:
-
-* Do not visit the website.
-* Avoid entering personal information.
-* Report the link if it appears to be phishing.
-
----
-
-## Future Improvements
-
-Password leak scanner using Pwned Passwords API
-Username exposure scanner (OSINT based)
-Advanced risk scoring system
-More threat intelligence integrations
-Interactive charts and analytics
-
----
-
-## Disclaimer
-
-ThreatLens is intended for educational and demonstration purposes only. The results are based on publicly available threat intelligence APIs and should not be considered a complete security assessment.
-
----
-
+ThreatLens is currently a **frontend simulation** intended for educational purposes and UI/UX demonstration. The scan results generated by the tools are simulated via smart client-side logic and do not currently make live requests to external threat intelligence APIs.
